@@ -7,7 +7,7 @@ const { route } = require("./app");
 const routes = express.Router();
 
 const alunoController = require("./controllers/aluno");
-const postagem = require("./controllers/postagem");
+const postagemController = require("./controllers/postagem");
 
 
 //encaminhar a requisição

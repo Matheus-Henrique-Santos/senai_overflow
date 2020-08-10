@@ -6,9 +6,9 @@ class Postagem extends Model{
     static init (sequelize) {
         super.init({   
             titulo: DataTypes.STRING,
-            descrição: DataTypes.STRING,
+            descricao: DataTypes.TEXT,
             imagem: DataTypes.STRING,
-            gists: DataTypes.STRING,
+            gists: DataTypes.TEXT,
         },
         {
             sequelize,

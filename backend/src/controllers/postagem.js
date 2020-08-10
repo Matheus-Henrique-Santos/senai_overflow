@@ -2,20 +2,24 @@ const Postagem = require("../models/Postagem");
 const { sequelize, associate, hasMany } = require("../models/Postagem");
 
 module.exports = {
-    async StorageEvent(req, res){
-        const token = req.headers.athorization;
-        const[bearer, created_aluno_id] = token.split("");
+    async store(req, res){
+        const token = req.headers.authorization;
+        const[bearer, created_aluno_id] = token.split(" ");
+
+        console.log(req.body)
 
         const { titulo, descricao, imagem, gists} = req.body;
 
-        let post = await Postagem.create({
+        console.log(descricao)
+
+        let postagem = await Postagem.create({
             titulo,
             descricao,
             imagem,
             gists,
             created_aluno_id,
         });    
-        res.status(201).send(Postagem);
+        res.status(201).send(postagem);
         
     },  
     async delete(req, res) {
