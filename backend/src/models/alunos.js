@@ -14,6 +14,9 @@ class Aluno extends Model{
         }
         );
     }
+    static associate(models){
+        this.hasMany(models.Postagem , {foreignKey: "created_aluno_id"});
+    }
 }
 
 module.exports = Aluno;

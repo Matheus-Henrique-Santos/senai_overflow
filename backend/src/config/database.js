@@ -7,6 +7,7 @@ module.exports = {
     username: "root",
     password: "bcd127",
     database: "senai_overflow",
+    logging: console.log,
     define: {
         timestamp: true,
         underscored: true,
