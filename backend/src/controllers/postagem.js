@@ -1,25 +1,54 @@
 const Postagem = require("../models/Postagem");
+const Aluno = require("../models/alunos");
 const { sequelize, associate, hasMany } = require("../models/Postagem");
 
+
 module.exports = {
+
+    async index(req, res){
+
+        const postagens = await Postagem.findAll({
+            include: {
+                association: "Aluno",
+                attributes: ["id", "nome", "ra"]
+            },
+
+            order: [["created_at", "DESC"]],
+        });
+
+        res.send(postagens);
+
+    },
+
     async store(req, res){
         const token = req.headers.authorization;
         const[bearer, created_aluno_id] = token.split(" ");
 
-        console.log(req.body)
-
         const { titulo, descricao, imagem, gists} = req.body;
 
-        console.log(descricao)
+        // const aluno = await Aluno.findByPk(created_aluno_id);
 
-        let postagem = await Postagem.create({
+        try {
+            const aluno = await Aluno.findByPk(created_aluno_id);
+            
+            if(!aluno){
+                res.send(404).send({erro: "Aluno não encontrado"});
+            }
+
+            let postagem = aluno.createPostagem({
             titulo,
             descricao,
             imagem,
-            gists,
-            created_aluno_id,
+            gists
         });    
         res.status(201).send(postagem);
+
+    } catch (error) {
+        return res.status(500)
+        .send({
+            erro:
+             "nao foi possivel adicionar a postagem. tente nivamente mais tarde"})    
+    }
         
     },  
     async delete(req, res) {
@@ -45,6 +74,6 @@ module.exports = {
 
         await postagem.destroy();
 
-        res.status(204).send;
+        res.status(201).send;
     },
 }
