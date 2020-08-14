@@ -1,6 +1,7 @@
 const Aluno = require("../models/Aluno");
 const bcrypt= require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const authConfig = require("../config/auth.json")
 
 module.exports = {
     async store(req, res){
@@ -21,7 +22,7 @@ module.exports = {
             return res.status(403).send({erro: "Usuario e/ou senha invalidos"})
         }
 
-        const token = jwt.sign({alunoId: aluno.id}, "SENAIOVERFLOW");
+        const token = jwt.sign({alunoId: aluno.id}, authConfig.secrete);
 
         //se existor e a senha estiver correta retorna ok com o token
         res.status(201).send({

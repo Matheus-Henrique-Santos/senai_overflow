@@ -6,6 +6,8 @@ const { route } = require("./app");
 //criando o routerizador
 const routes = express.Router();
 
+const autorizacaoMid = require("./middlwares/autorizacao");
+
 const alunoController = require("./controllers/aluno");
 const postagemController = require("./controllers/postagem");
 const comentarioController = require("./controllers/comentario");
@@ -13,6 +15,8 @@ const sessaoController = require("./controllers/sessao");
 
 //rotas publicas
 routes.post("/sessao", sessaoController.store);
+
+routes.use(autorizacaoMid);
 
 //rotas de usuário
 routes.get("/alunos", alunoController.listar);
