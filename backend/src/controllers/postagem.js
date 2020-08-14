@@ -1,79 +1,79 @@
 const Postagem = require("../models/Postagem");
-const Aluno = require("../models/alunos");
-const { sequelize, associate, hasMany } = require("../models/Postagem");
-
+const Aluno = require("../models/Aluno");
 
 module.exports = {
+  async index(req, res) {
+    /**
+     * SELECT p.*, a.id, a.nome, a.ra FROM postagens p
+     * INNER JOIN aluno a ON p.created_aluno_id = a.id
+     */
+    const postagens = await Postagem.findAll({
+      include: {
+        association: "Aluno",
+        attributes: ["id", "nome", "ra"],
+      },
+      order: [["created_at", "DESC"]],
+    });
 
-    async index(req, res){
+    res.send(postagens);
+  },
 
-        const postagens = await Postagem.findAll({
-            include: {
-                association: "Aluno",
-                attributes: ["id", "nome", "ra"]
-            },
+  async store(req, res) {
+    const token = req.headers.authorization;
+    const [Bearer, created_aluno_id] = token.split(" ");
 
-            order: [["created_at", "DESC"]],
-        });
+    const { titulo, descricao, imagem, gists } = req.body;
 
-        res.send(postagens);
+    try {
+      const aluno = await Aluno.findByPk(created_aluno_id);
 
-    },
+      if (!aluno) {
+        res.status(404).send({ erro: "Aluno não encontrado" });
+      }
 
-    async store(req, res){
-        const token = req.headers.authorization;
-        const[bearer, created_aluno_id] = token.split(" ");
+      let postagem = await aluno.createPostagem({
+        titulo,
+        descricao,
+        imagem,
+        gists,
+      });
 
-        const { titulo, descricao, imagem, gists} = req.body;
-
-        // const aluno = await Aluno.findByPk(created_aluno_id);
-
-        try {
-            const aluno = await Aluno.findByPk(created_aluno_id);
-            
-            if(!aluno){
-                res.send(404).send({erro: "Aluno não encontrado"});
-            }
-
-            let postagem = aluno.createPostagem({
-            titulo,
-            descricao,
-            imagem,
-            gists
-        });    
-        res.status(201).send(postagem);
-
+      res.status(201).send(postagem);
     } catch (error) {
-        return res.status(500)
-        .send({
-            erro:
-             "nao foi possivel adicionar a postagem. tente nivamente mais tarde"})    
+      return res.status(500).send({
+        erro:
+          "Não foi possível adicionar a postagem, tente novamente mais tarde.",
+      });
     }
-        
-    },  
-    async delete(req, res) {
-        const token = req.headers.authorization;
-        const [bearer, created_aluno_id] = token.split("");
+  },
 
-        const {id} = req.params;
+  async delete(req, res) {
+    // pegando o id do aluno que está logado
+    const token = req.headers.authorization;
+    const [Bearer, created_aluno_id] = token.split(" ");
 
-        let postagem = await Postagem.findByPk(id);
+    // pegando o id do post a apagar
+    const { id } = req.params;
 
-        if(!postagem){
-            return res.status(404).send({erro: "Postagem não encontrada"});
+    // procura o post pelo id
+    let postagem = await Postagem.findByPk(id);
 
-        }
+    // se a postagem não existir, retorna not found
+    if (!postagem) {
+      return res.status(404).send({ erro: "Postagem não encontrada" });
+    }
 
+    // se o aluno logado for diferente do aluno que criou a postagem
+    // retorna não autorizado
+    if (postagem.created_aluno_id != created_aluno_id) {
+      return res
+        .status(401)
+        .send({ erro: "Você não tem permissão para excluir essa postagem." });
+    }
 
-        if (postagem.created_aluno_id != created_aluno_id){
-            return res
-                .status(401)
-                .send({ erro: "voce nao tem permissão para excluir essa postagem"})
+    // efetua a exclusão da postagem
+    await postagem.destroy();
 
-        }
-
-        await postagem.destroy();
-
-        res.status(201).send;
-    },
-}
+    res.status(204).send();
+  },
+};

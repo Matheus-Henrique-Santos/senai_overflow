@@ -1,21 +1,21 @@
-const {Model, DataTypes} = require("sequelize");
+const { Model, DataTypes } = require("sequelize");
 
-class Comentario extends Model{
-    static init(sequelize){
-        super.init(
-            {
-                descricao: DataTypes.TEXT,
-            },
-            {
-                sequelize,
-            }
-        );
-    }
+class Comentario extends Model {
+  static init(sequelize) {
+    super.init(
+      {
+        descricao: DataTypes.TEXT,
+      },
+      {
+        sequelize,
+      }
+    );
+  }
 
-    static associate(models){
-        this.belongsTo(models.Postagem);
-        this.belongsTo(models.Aluno);
-    }
-    
+  static associate(models) {
+    this.belongsTo(models.Postagem);
+    this.belongsTo(models.Aluno);
+  }
 }
+
 module.exports = Comentario;

@@ -1,19 +1,32 @@
-### EXEMPLO
+# O que é ORM?
 
-Tabela Pessoa 
+ORM é mapeamento objeto-relacional.
 
-nome idade sexo
+Consiste basicamente em mapear os dados e a estrutura do banco em objetos no nosso projeto.
+
+### Exemplo
+
+Tabela Pessoa
+
+Nome Idade Sexo
 
 ```javascript
-
 class pessoa {
-    string nome;
-    integer idade;
-    string sexo;
+  String nome;
+  Integer idade;
+  String sexo;
 
-    public save(){
-
-    }
+  public save(){
+    //insert no banco de dados
+  }
 }
-
 ```
+
+### Exemplos de ORMs
+
+- Python - Flex
+- Ruby - Rail
+- Java - Hibernate
+- PHP - Eloquent
+- Typescript - Typeorm
+- Javascript - Sequelize

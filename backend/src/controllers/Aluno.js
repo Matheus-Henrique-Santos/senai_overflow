@@ -1,65 +1,57 @@
-const Aluno = require("../models/alunos.js");
-const {Op} = require("sequelize");
-// const {delete} = require("../routes.js");
-
-
-//realiza todas as interações q tem q ser feita com os alunos
+const { Op } = require("sequelize");
+const Aluno = require("../models/Aluno");
+const bcrypt = require('bcryptjs');
 
 module.exports = {
-    // lista todos alunos
-    async listar(req, res){
+  //lista todos os alunos
+  async listar(req, res) {
+    const alunos = await Aluno.findAll();
 
-        const alunos = await Aluno.findAll();
+    res.send(alunos);
+  },
 
-        res.send(alunos);
-    },
+  // buscar um aluno pelo id
+  async buscarPorId(req, res) {
+    const { id } = req.params;
 
-    //busca alunos por id
-    async buscarPorId(req,res){
-        const {id} = req.params;
+    // busca o aluno pela chave
+    let aluno = await Aluno.findByPk(id, { raw: true });
 
-        const aluno = await Aluno.findByPk(id, { raw:true});
+    // verifica se o aluno não foi encontrado
+    if (!aluno) {
+      return res.status(404).send({ erro: "Aluno não encontrado" });
+    }
 
-        if(!aluno){
-            res.status(404).send({erro: "aluno não encontrado"})
-        }
+    delete aluno.senha;
 
-        // aluno = aluno.getDataValue
+    // retorna o aluno encontrado
+    res.send(aluno);
+  },
 
-        delete aluno.senha;
+  //metodo responsavel por fazer as inserções
+  async store(req, res) {
+    const { ra, nome, email, senha } = req.body;
 
-        res.send(aluno);
-    },
+    // verificar se aluno já existe
+    // select * from alunos where ra = ? or email = ?
+    let aluno = await Aluno.findOne({
+      where: {
+        [Op.or]: [{ ra: ra }, { email: email }],
+      },
+    });
 
-    //metodo responsavel por fazer as inserções
-    async store(req, res){
-            const {ra, nome, email, senha} = req.body;
+    if (aluno) {
+      return res.status(400).send({ erro: "Aluno já cadastrado" });
+    }
 
-            let aluno = await Aluno.findOne({
-                where: {
-                    [Op.or]:[
-                        {ra: ra},
-                        {email: email}
-                    ]
-                }
-            });
+    const senhaCripto = await bcrypt.hash(senha, 10);
 
-            if(aluno){
-                return res.status(400).send({ erro: "aluno já cadastrado"})
-            }
+    aluno = await Aluno.create({ ra, nome, email, senha: senhaCripto });
 
-            aluno = await Aluno.create({ra, nome, email, senha});
-            
-            //cadastrar aluno no banco de dados
-          
-            res.status(201).send(aluno);  
-    },
+    res.status(201).send(aluno);
+  },
 
-    update(){
+  update() {},
 
-    },
-
-    delete(){
-
-    },
-}
+  delete() {},
+};
