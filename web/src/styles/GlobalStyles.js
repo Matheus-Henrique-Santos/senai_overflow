@@ -1,13 +1,12 @@
-import { createGlobalStyle } from "styled-components";
+import {createGlobalStyle} from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
-
-    :root{
+    :root {
         --primary: #111;
         --secondary: rgb(25,25,25);
-        --white: #d9d9d9;
-        --gray: #a7a7a7;
-        --red: #aa0000;
+        --white: #D9D9D9;
+        --gray: #7A7A7A;
+        --red: #AA0000;
     }
 
     *{
@@ -16,30 +15,51 @@ export const GlobalStyle = createGlobalStyle`
         outline: 0;
     }
 
-    body{
+    body {
         font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
         background-color: var(--primary);
     }
 
     input {
         color: var(--white);
-        background-color: var(---secundary);
+        background-color: var(--secondary);
         font-size: 16px;
         border: 1px solid var(--white);
         padding: 10px;
         font-weight: bold;
         height: 30px;
+        transition: background-color 0.2s;
     }
 
-    label{
+    label {
         color: var(--white);
         letter-spacing: 2px;
+
         font-size: 20px;
     }
 
-    input  {
-        :hover {
+    input, button {
+        :hover{
             background-color: var(--red);
+            transition: background-color 0.2s;
+        }
+    }
+
+    button {
+        padding: 10px;
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        font-size: 18px;
+        letter-spacing: 1px;
+
+        color: var(--white);
+        background-color: var(--primary);
+        border: 1px solid var(--white);
+        transition: background-color 0.2s;
+        cursor: pointer;
+
+        :active{
+            color: var(--gray);
+            border: 1px solid var(--gray);
         }
     }
 `
